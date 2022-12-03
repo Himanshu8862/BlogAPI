@@ -1,77 +1,24 @@
 const express = require("express");
+const {userRegisterCtrl, userLoginCtrl, usersCtrl, userProfileCtrl, userDeleteCtrl, userUpdateCtrl} = require("../../controllers/users/userCtrl");
 
 const userRouter = express.Router();
 
 // POST/api/v1/users/register
-userRouter.post("/register", async(req,res)=>{
-    try {
-        res.json({
-            status:"Success",
-            data:"User registered"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-})
+userRouter.post("/register", userRegisterCtrl);
 
 // POST/api/v1/users/login
-userRouter.post("/login", async(req,res)=>{
-    try {
-        res.json({
-            status:"Success",
-            data:"User login"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-});
+userRouter.post("/login", userLoginCtrl);
 
 // GET/api/v1/users/profile/:id
-userRouter.get("/profile/:id", async(req,res)=>{
-    try {
-        res.json({
-            status:"success",
-            data:"Profile route"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-});
+userRouter.get("/profile/:id", userProfileCtrl);
 
 // GET/api/v1/users/
-userRouter.get("/", async(req,res)=>{
-    try {
-        res.json({
-            status:"success",
-            data:"all Users route"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-});
+userRouter.get("/", usersCtrl);
 
 // DELETE/api/v1/users/:id
-userRouter.delete("/:id", async(req,res)=>{
-    try {
-        res.json({
-            status:"success",
-            data:"Delete user route"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-});
+userRouter.delete("/:id", userDeleteCtrl);
 
 // PUT/api/v1/users/:id
-userRouter.put("/:id", async(req,res)=>{
-    try {
-        res.json({
-            status:"success",
-            data:"Update user route"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-});
+userRouter.put("/:id", userUpdateCtrl);
 
 module.exports = userRouter;
