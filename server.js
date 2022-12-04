@@ -11,6 +11,8 @@ const app = express();
 
 
 // MIDDLEWARE
+app.use(express.json());    // parse incoming payload
+
 
 // ROUTES
 app.use("/api/v1/users",userRouter);
