@@ -122,11 +122,46 @@ const userUpdateCtrl = async(req,res)=>{
     }
 };
 
+// profile photo upload
+const profilePhotoUploadCtrl = async(req,res, next)=>{
+
+    try {
+        // find the user to be update
+        const userToUpdate = await User.findById(req.userAuth);
+        // check id user is found
+        if(!userToUpdate){
+            return next(appErr("User not found", 403));
+        }
+        // check if user is blocked
+        if(userToUpdate.isBlocked){
+            return next(appErr("Action not allowed,, your account is blocked", 403));
+        }
+        // check if user is updating their profile photo
+        if(req.file){
+            // update profile photo
+            await User.findByIdAndUpdate(req.userAuth,{
+                $set:{
+                    profilePhoto : req.file.path,
+                },
+            },{
+                new:true
+            });
+        }
+        res.json({
+            status:"success",
+            data:"you have successfully updated your profile photo"
+        });
+    } catch (error) {
+        next(appErr(error.message, 500));
+    }
+};
+
 module.exports = {
     userRegisterCtrl,
     userLoginCtrl,
     usersCtrl,
     userProfileCtrl,
     userDeleteCtrl,
-    userUpdateCtrl
+    userUpdateCtrl,
+    profilePhotoUploadCtrl
 };
