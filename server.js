@@ -5,7 +5,7 @@ const postRouter = require("./routes/posts/postRoutes");
 const categoryRouter = require("./routes/categories/categoryRoute");
 const commentRouter = require("./routes/comments/commentRouter");
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
-
+const isAdmin = require("./middlewares/isAdmin");
 
 dotenv.config();
 require("./config/dbConnect");
@@ -19,6 +19,7 @@ app.get("/", (req,res)=>{
 
 // MIDDLEWARE
 app.use(express.json());    // parse incoming payload
+// app.use(isAdmin);           // if implemented like this login and register should also have authorization header of currently logged-in user which does not make sense
 
 
 // ROUTES
