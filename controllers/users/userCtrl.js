@@ -315,9 +315,10 @@ const adminUnblockUserCtrl = async(req,res)=>{
 // all users
 const usersCtrl = async(req,res)=>{
     try {
+        const users = await User.find(); 
         res.json({
             status:"success",
-            data:"all Users route"
+            data: users
         });
     } catch (error) {
         res.json(error.message);

@@ -75,8 +75,45 @@ const userSchema = new mongoose.Schema({
         default : "Bronze"
     },
 },{
-    timestamps : true
-})
+    timestamps : true,
+    toJSON : {virtuals : true}  //  for virtuals to appear in your console.log() output and while fetching results of a query
+});
+
+// get fullname
+userSchema.virtual("fullname").get(function(){
+    // console.log(this);
+    return `${this.firstname} ${this.lastname}`;
+});
+
+// get initials
+userSchema.virtual("initials").get(function(){
+    return `${this.firstname[0]}${this.lastname[0]}`;
+});
+
+// get postCount
+userSchema.virtual("postCount").get(function(){
+    return this.posts.length;
+});
+
+// get followers count
+userSchema.virtual("followersCount").get(function(){
+    return this.followers.length;
+});
+
+// get following count
+userSchema.virtual("followingCount").get(function(){
+    return this.following.length;
+});
+
+// get viewers count
+userSchema.virtual("viewerCount").get(function(){
+    return this.viewers.length;
+});
+
+// get blocked count
+userSchema.virtual("blockedCount").get(function(){
+    return this.blocked.length;
+});
 
 // compile the user model
 const User = mongoose.model("User", userSchema);
