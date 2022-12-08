@@ -73,6 +73,38 @@ const userLoginCtrl = async(req,res)=>{
     }
 };
 
+// who viewed my profile
+const whoViewedMyProfileCtrl = async(req,res,next)=>{
+    try {
+        // 1. Find the original user
+        const user = await User.findById(req.params.id);
+
+        // 2. Find the user who viewed the original user
+        const userWhoViewed = await User.findById(req.userAuth);
+
+        // 3. check if original user and who viewed is found
+        if(user && userWhoViewed){
+            // 4. Check if userWhoViewed is already in the user's viewers array
+            const isUserAlreadyViewed = user.viewers.find(viewer => viewer.toString() === userWhoViewed._id.toString());
+            if(isUserAlreadyViewed){
+                return next(appErr("You already viewed this profile"));
+            }
+            else{
+                // 5. push the userWhoViewed to the original user's the viewers array
+                user.viewers.push(userWhoViewed._id);
+                // 6. save the user
+                await(user.save())
+                res.json({
+                    status:"success",
+                    data:"you have successfully viewed the profile"
+                });
+            }
+        }
+    }catch (error) {
+        res.json(error.message);
+    }
+};
+
 // all users
 const usersCtrl = async(req,res)=>{
     try {
@@ -126,19 +158,19 @@ const userUpdateCtrl = async(req,res)=>{
 const profilePhotoUploadCtrl = async(req,res, next)=>{
 
     try {
-        // find the user to be update
+        // 1. find the user to be update
         const userToUpdate = await User.findById(req.userAuth);
-        // check id user is found
+        // 2. check id user is found
         if(!userToUpdate){
             return next(appErr("User not found", 403));
         }
-        // check if user is blocked
+        // 3. check if user is blocked
         if(userToUpdate.isBlocked){
             return next(appErr("Action not allowed,, your account is blocked", 403));
         }
-        // check if user is updating their profile photo
+        // 4. check if user is updating their profile photo
         if(req.file){
-            // update profile photo
+            // 5. update profile photo
             await User.findByIdAndUpdate(req.userAuth,{
                 $set:{
                     profilePhoto : req.file.path,
@@ -163,5 +195,6 @@ module.exports = {
     userProfileCtrl,
     userDeleteCtrl,
     userUpdateCtrl,
-    profilePhotoUploadCtrl
+    profilePhotoUploadCtrl,
+    whoViewedMyProfileCtrl
 };

@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
         type : String,
         enum : ["Admin", "Guest", "Editor"]
     },
+    // people who viewed your profile
     viewers:[{
         type : mongoose.Schema.Types.ObjectId,
         ref : "User"
