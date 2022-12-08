@@ -8,7 +8,9 @@ const {
     userDeleteCtrl,
     userUpdateCtrl,
     profilePhotoUploadCtrl,
-    whoViewedMyProfileCtrl
+    whoViewedMyProfileCtrl,
+    followingCtrl,
+    unfollowCtrl
 }= require("../../controllers/users/userCtrl");
 
 const multer = require("multer")
@@ -40,6 +42,12 @@ userRouter.put("/:id", userUpdateCtrl);
 
 // GET/api/v1/users/profile-viewers/:id         here :id is the id of the user whose profile is being viewed
 userRouter.get("/profile-viewers/:id", isLogin, whoViewedMyProfileCtrl);
+
+// GET/api/v1/users/following/:id         here :id is the id of the user whom you want to follow
+userRouter.get("/following/:id", isLogin, followingCtrl);
+
+// GET/api/v1/users/unfollowing/:id         here :id is the id of the user whom you want to follow
+userRouter.get("/unfollowing/:id", isLogin, unfollowCtrl); 
 
 // POST/api/v1/users/profile-photo-upload
 userRouter.post("/profile-photo-upload", isLogin, upload.single("profile"), profilePhotoUploadCtrl); // chaining multiple middleware
