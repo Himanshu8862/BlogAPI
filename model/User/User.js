@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Post = require("../Post/Post");
 
 // create schema
 const userSchema = new mongoose.Schema({
@@ -21,11 +22,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required:[true,"Password is required"]
     },
-    // make this a virtual property
-    // postCount:{
-    //     type: Number,
-    //     default:0
-    // },
     isBlocked:{
         type: Boolean,
         default:false,
@@ -51,11 +47,6 @@ const userSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "User"
     }],
-    // have to make this a virtual property
-    // active:{
-    //     type : Boolean,
-    //     default : true
-    // },
     posts:[{
         type : mongoose.Schema.Types.ObjectId,
         ref : "Post"
@@ -77,6 +68,108 @@ const userSchema = new mongoose.Schema({
 },{
     timestamps : true,
     toJSON : {virtuals : true}  //  for virtuals to appear in your console.log() output and while fetching results of a query
+});
+
+// Hooks
+
+// pre - before record is saved (find, findOne, query methods)
+
+// whenever a single user is fetched this hook will be called
+userSchema.pre("findOne",async function(next){
+
+    // ------------- find the last post date of the user -------------
+
+    // get the user id
+    const userId = this._conditions._id;
+    // find the post created by the user
+    const posts = await Post.find({User:userId});
+    // get the last post created by the user
+    const lastPost = posts[posts.length-1];
+    // get last post date
+    const lastPostDate = new Date(lastPost.createdAt);
+    // last post date in string format
+    const lastPostDateStr = lastPostDate.toDateString();
+    // add last post date as virtual to the schema
+    userSchema.virtual("lastPostDate").get(function(){
+        return lastPostDateStr;
+    });
+
+    // ------------- check if the user is inactive and block them by system -------------
+    const currDate = new Date();
+        // get the time duration in days from last post till today
+    const diffMilliseconds = Math.abs(lastPostDate - currDate);
+    const diffDays = (diffMilliseconds / (1000 * 60 * 60 * 24));
+
+    // add virtuals isInactive to the schema to check if the user has not posted for 30 days
+    if (diffDays>30){
+        // add virtuals isInactive to the schema to check if a user is inactive for 30 days
+        userSchema.virtual("isInactive").get(function(){
+            return true;
+        });
+        // find user by ID and update
+        await User.findByIdAndUpdate(userId,
+            {isBlocked:true},
+            {new : true}
+        );
+    }else{
+        // add virtuals isInactive to the schema to check if a user is inactive for 30 days
+        userSchema.virtual("isInactive").get(function(){
+            return false;
+        });
+        // find user by ID and update
+        await User.findByIdAndUpdate(userId,
+            {isBlocked:false},
+            {new : true}
+        );
+    }
+
+    // ------------- last active date of user -------------
+    // conver to days ago, for example 1 day ago
+    const daysAgo = Math.floor(diffDays);
+    // add virtuals lastActive in days to schema
+    userSchema.virtual("lastActive").get(function(){
+        if(daysAgo<=0){
+            return "Today";
+        }else if (daysAgo===1){
+            return "Yesterday";
+        }else(daysAgo>1)
+            return `${daysAgo} days ago`;
+    });
+
+    // ------------- update user award based on number of posts -------------
+    const numberOfPosts = posts.length;
+    if(numberOfPosts<10){
+        await User.findByIdAndUpdate(userId,
+            {userAward:"Bronze"},
+            {new:true}
+        );
+    }
+    if(numberOfPosts>10){
+        await User.findByIdAndUpdate(userId,
+            {userAward:"Silver"},
+            {new:true}
+        );
+    }
+    if(numberOfPosts>20){
+        await User.findByIdAndUpdate(userId,
+            {userAward:"Gold"},
+            {new:true}
+        );
+    }
+
+    // ------------- populate the posts of the user -------------
+    this.populate({
+        path : "posts"
+    });
+
+    next();
+});
+
+
+// post - after saving (create)
+userSchema.post("save", function(next){
+    console.log("post hook called");
+
 });
 
 // get fullname
