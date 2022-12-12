@@ -82,11 +82,11 @@ userSchema.pre("findOne",async function(next){
     // get the user id
     const userId = this._conditions._id;
     // find the post created by the user
-    const posts = await Post.find({User:userId});
+    const posts = await Post.find({user:userId});
     // get the last post created by the user
     const lastPost = posts[posts.length-1];
     // get last post date
-    const lastPostDate = new Date(lastPost.createdAt);
+    const lastPostDate = new Date(lastPost?.createdAt); // optional chaining, same as
     // last post date in string format
     const lastPostDateStr = lastPostDate.toDateString();
     // add last post date as virtual to the schema

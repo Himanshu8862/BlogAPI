@@ -14,7 +14,8 @@ const {
     blockUserCtrl,
     unblockUserCtrl,
     adminBlockUserCtrl,
-    adminUnblockUserCtrl
+    adminUnblockUserCtrl,
+    updatePasswordCtrl
 }= require("../../controllers/users/userCtrl");
 
 const multer = require("multer")
@@ -39,11 +40,11 @@ userRouter.get("/profile/",isLogin, userProfileCtrl);
 // GET/api/v1/users/
 userRouter.get("/", usersCtrl);
 
-// DELETE/api/v1/users/:id
-userRouter.delete("/:id", userDeleteCtrl);
+// DELETE/api/v1/users/delete-account
+userRouter.delete("/delete-account", isLogin, userDeleteCtrl);
 
-// PUT/api/v1/users/:id
-userRouter.put("/:id", userUpdateCtrl);
+// PUT/api/v1/users/
+userRouter.put("/", isLogin, userUpdateCtrl);
 
 // GET/api/v1/users/profile-viewers/:id         here :id is the id of the user whose profile is being viewed
 userRouter.get("/profile-viewers/:id", isLogin, whoViewedMyProfileCtrl);
@@ -65,6 +66,9 @@ userRouter.put("/admin-block/:id", isLogin, isAdmin, adminBlockUserCtrl);
 
 // PUT/api/v1/users/admin-unblock/:id         here :id is the id of the user who admin wants to unblock
 userRouter.put("/admin-unblock/:id", isLogin, isAdmin, adminUnblockUserCtrl);
+
+// PUT/api/v1/users/update-password/
+userRouter.put("/update-password", isLogin, updatePasswordCtrl);
 
 
 // POST/api/v1/users/profile-photo-upload
