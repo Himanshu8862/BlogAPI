@@ -76,6 +76,7 @@ const userSchema = new mongoose.Schema({
 
 // whenever a single user is fetched this hook will be called
 userSchema.pre("findOne",async function(next){
+    console.log('prehook called');
 
     // ------------- find the last post date of the user -------------
 
@@ -107,24 +108,26 @@ userSchema.pre("findOne",async function(next){
             return true;
         });
         // find user by ID and update
-        await User.findByIdAndUpdate(userId,
-            {isBlocked:true},
-            {new : true}
-        );
+        // await User.findByIdAndUpdate(userId,
+        //     {isBlocked:true},
+        //     {new : true}
+        // );
     }else{
         // add virtuals isInactive to the schema to check if a user is inactive for 30 days
         userSchema.virtual("isInactive").get(function(){
             return false;
         });
         // find user by ID and update
-        await User.findByIdAndUpdate(userId,
-            {isBlocked:false},
-            {new : true}
-        );
+        // -- this makes the logic to the program incorrect, if the user has been blocked by
+        // the admin, and he they made a post on that day, this prehook will unblock the user --
+        // await User.findByIdAndUpdate(userId,
+        //     {isBlocked:false},
+        //     {new : true}
+        // );
     }
 
     // ------------- last active date of user -------------
-    // conver to days ago, for example 1 day ago
+    // convert to days ago, for example 1 day ago
     const daysAgo = Math.floor(diffDays);
     // add virtuals lastActive in days to schema
     userSchema.virtual("lastActive").get(function(){
