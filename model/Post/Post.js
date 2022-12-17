@@ -37,12 +37,61 @@ const postSchema = new mongoose.Schema({
     },
     photo:{
         type: String,
-        // required: [true,"Photo is required"]
+        required: [true,"Photo is required"]
     }
 },{
-    timestamps: true
+    timestamps: true,
+    toJSON : {virtuals : true}
 
 });
+
+postSchema.pre(/^find/, function(next){
+
+    postSchema.virtual("viewsCount").get(function(){
+        return this.numViews.length;
+    });
+
+    postSchema.virtual("likesCount").get(function(){
+        return this.likes.length;
+    });
+
+    postSchema.virtual("dislikesCount").get(function(){
+        return this.dislikes.length;
+    });
+
+    postSchema.virtual("likesPercentage").get(function(){
+        const post = this;
+        const total = +post.likes.length + +post.dislikes.length;
+        const percentage = (post.likes.length / total) * 100;
+        return `${percentage}%`;
+    });
+
+    postSchema.virtual("dislikesPercentage").get(function(){
+        const post = this;
+        const total = +post.likes.length + +post.dislikes.length;
+        const percentage = (post.dislikes.length / total) * 100;
+        return `${percentage}%`;
+    });
+
+    // if day is less than 0 return today, if day is 1 return yesterday else return days ago
+    postSchema.virtual("daysAgo").get(function(){
+        const post = this;
+        const date = new Date(post.createdAt);
+        const daysAgo = Math.floor( (Date.now()-date) / (1000*60*60*24) );
+        if(daysAgo === 0){
+            return "Today";
+        }else if (daysAgo === 1){
+            return "Yesterday";
+        }else
+            return `${daysAgo} days ago`;
+    });
+
+
+    next();
+});
+
+
+
 
 // compile the post model
 const Post = mongoose.model("Post", postSchema);
