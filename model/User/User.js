@@ -80,7 +80,7 @@ const userSchema = new mongoose.Schema({
 
 // whenever a single user is fetched this hook will be called
 userSchema.pre("findOne",async function(next){
-    console.log('prehook called');
+    // console.log('prehook called');
 
     // ------------- find the last post date of the user -------------
 
@@ -175,7 +175,7 @@ userSchema.pre("findOne",async function(next){
 
 // post - after saving (create)
 userSchema.post("save", function(next){
-    console.log("post hook called");
+    // console.log("post hook called");
 
 });
 

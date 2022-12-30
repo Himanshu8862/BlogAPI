@@ -5,17 +5,11 @@ const postRouter = require("./routes/posts/postRoutes");
 const categoryRouter = require("./routes/categories/categoryRoute");
 const commentRouter = require("./routes/comments/commentRouter");
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
-const isAdmin = require("./middlewares/isAdmin");
+const Post = require("./model/Post/Post");
 
 dotenv.config();
 require("./config/dbConnect");
 const app = express();
-
-// so that we can open in localhost:9000
-app.get("/", (req,res)=>{
-    res.send("We are building BlogAPI");
-});
-
 
 // MIDDLEWARE
 app.use(express.json());    // parse incoming payload
@@ -23,6 +17,18 @@ app.use(express.json());    // parse incoming payload
 
 
 // ROUTES
+// --Home route--
+app.get("/",async(req,res)=>{
+    try {
+        const posts = await Post.find();
+        res.json({
+            status: "success",
+            data : posts
+        })
+    } catch (error) {
+        res.json(error)
+    }
+});
 app.use("/api/v1/users",userRouter);
 app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/comments", commentRouter);
