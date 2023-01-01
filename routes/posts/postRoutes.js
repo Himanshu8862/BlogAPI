@@ -24,7 +24,7 @@ postRouter.post("/", isLogin, upload.single("photo"), createPostCtrl);
 postRouter.get("/:id", isLogin, postDetailsCtrl);
 
 // GET/api/v1/posts/
-postRouter.get("/", isLogin, fetchPostsCtrl);
+postRouter.get("/", fetchPostsCtrl);
 
 // GET/api/v1/posts/likes/:id
 postRouter.get("/likes/:id", isLogin, toggleLikesPostCtrl);

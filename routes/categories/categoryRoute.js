@@ -16,10 +16,10 @@ const categoryRouter = express.Router();
 categoryRouter.post("/", isLogin, createCategoryCtrl);
 
 // GET/api/v1/categories
-categoryRouter.get("/", fetchCategoriesCtrl);
+categoryRouter.get("/", isLogin, fetchCategoriesCtrl);
 
 // GET/api/v1/categories/:id
-categoryRouter.get("/:id", categoryDetailsCtrl);
+categoryRouter.get("/:id", isLogin, categoryDetailsCtrl);
 
 // DELETE/api/v1/categories/:id
 categoryRouter.delete("/:id", isLogin, deleteCategoryCtrl);
