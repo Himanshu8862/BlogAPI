@@ -497,7 +497,7 @@ Example request body:
 ## **Create Category**
 
 ```http
-POST /api/v1/categories/:id
+POST /api/v1/categories/
 ```
 
 | Parameter        | Type     | Description    | Required |
